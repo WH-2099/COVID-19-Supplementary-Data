@@ -52,21 +52,19 @@ def collectCityInfo(data):
     cityInfoList = []
     cityInfo = {}
     for province in rawList:
-        cityInfo['pName'] = province.get('name', None)
-        cityInfo['pId'] = province.get('id', None)
-        cityInfo['pTotal'] = province.get('total', None)
+        cityInfo['provinceName'] = province.get('name', None)
+        cityInfo['provinceId'] = province.get('id', None)
+        cityInfo['provinceTotal'] = province.get('total', None)
         for city in province['list']:
-            cityInfo['name'] = city.get('name', None)
-            cityInfo['id'] = city.get('id', None)
-            cityInfo['lon'] = city.get('lon', None)
-            cityInfo['lat'] = city.get('lat', None)
-            cityInfo['level'] = city.get('level', None)
-            cityInfo['count'] = city.get('count', None)
+            cityInfo['cityName'] = city.get('name', None)
+            cityInfo['cityId'] = city.get('id', None)
+            cityInfo['cityLon'] = city.get('lon', None)
+            cityInfo['cityLat'] = city.get('lat', None)
+            cityInfo['cityLevel'] = city.get('level', None)
+            cityInfo['cityCount'] = city.get('count', None)
             #内容无意义
-            #cityInfo['textTitle'] = city.get('text_info', None).get('title',
-            #None)
-            #cityInfo['textContent'] = city.get('text_info',
-            #None).get('content', None)
+            #cityInfo['textTitle'] = city.get('text_info', None).get('title',None)
+            #cityInfo['textContent'] = city.get('text_info',None).get('content', None)
             cityInfoList.append(cityInfo.copy())
     return cityInfoList
 
@@ -95,7 +93,7 @@ def collectPoisInfo(data):
         poisInfo['lon'] = poi.get('lon', None)
         #内容无意义
         #poisInfo['number'] = poi.get('number', None)
-        #poisInfo['tag'] = poi.get('tag_display_std', None)
+        poisInfo['tag'] = poi.get('tag_display_std', None)
         poisInfo['source'] = poi.get('source', None)
         poisInfoList.append(poisInfo.copy())
     return poisInfoList
