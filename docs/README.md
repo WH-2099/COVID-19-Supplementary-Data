@@ -1,12 +1,12 @@
 # COVID-19-outbreak_area_data
 
-## 数据源: ![数据源](/docs/source.png)
+## 数据源: ![数据源](source.png)
 
 ***
 **COVID-19疫情区域数据（新冠患者曾活动场所）**  
 **！！！不采用非官方民间数据！！！**
 
-![地图](/docs/map.png)
+![地图](map.png)
 
 ### 字段说明
 
