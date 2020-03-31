@@ -7,7 +7,7 @@ import urllib.request
 import json
 import csv
 import datetime
-from tools.shellColor import printColorStr
+from shellColor import printColorStr
 
 
 
