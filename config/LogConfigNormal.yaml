@@ -1,0 +1,91 @@
+#Logging Config
+#Author: WH-2099
+
+version: 1              #必须，默认为1
+
+loggers:
+    root:
+        level: INFO
+        handlers: [CONSOLE, RFILE]
+        #propagate: True
+        #filters: []
+
+_handlers_file:
+    filename: &_filename .log
+    mode: &_mode "a"
+    encoding: &_encoding utf-8
+    delay: &_delay False
+    #errors: &_errors None
+    
+handlers:
+    CONSOLE:
+    #输出到控制台
+        #level: 
+        formatter: DEFAULT
+        #filters: []
+        class: logging.StreamHandler
+        #stream: sys.stderr
+    FILE:
+    #输出到文件
+        #level: 
+        #formatter: 
+        #filters: []
+        class: logging.FileHandler
+        filename: *_filename
+        mode: *_mode
+        encoding: *_encoding
+        delay: *_delay
+        #errors: *_errors
+    RFILE:
+    #轮换日志，到指定大小自动切分
+        #level: 
+        formatter: DEFAULT
+        #filters: []
+        class: logging.handlers.RotatingFileHandler
+        maxBytes: 10485760 #10MB
+        backupCount: 2
+        filename: *_filename
+        mode: *_mode
+        encoding: *_encoding
+        delay: *_delay
+        #errors: *_errors
+    TRFILE:
+    #时间轮换日志，到指定时间自动切分
+        #level: 
+        #formatter: 
+        #filters: []
+        class: logging.handlers.TimedRotatingFileHandler
+        when: "H" #"S"秒 "M"分 "H"时 "D"天 "midnight" "W0"-"W6"工作日(0=星期一)
+        interval: 12 #when*interval
+        backupCount: 2
+        filename: *_filename
+        encoding: *_encoding
+        delay: *_delay
+        #errors: *_errors
+        #utc: False
+
+#filters:
+#    filterName:
+#        name: 要过滤的logger的名称
+
+formatters:
+    # %(asctime)s
+    # %(funcName)s
+    # %(levelname)s
+    # %(message)s
+    # %(name)s
+    # %(module)s
+    # %(filename)s
+    # %(pathname)s
+    # %(process)d
+    # %(processName)s
+    # %(thread)d
+    # %(threadName)s
+    ALL:
+        format: "%(asctime)s@%(process)d-%(processName)s#%(thread)d-%(threadName)s#%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s"
+    DEFAULT:
+        format: "%(asctime)s@%(threadName)s-%(filename)s # %(name)s-%(levelname)s-%(message)s"
+    LESS:
+        format: "%(asctime)s @ %(module)s - %(name)s - %(levelname)s - %(message)s"
+    MORE:
+        format: "%(asctime)s@%(process)d-%(thread)d-%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s"
