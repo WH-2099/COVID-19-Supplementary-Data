@@ -84,7 +84,7 @@ formatters:
     ALL:
         format: "%(asctime)s@%(process)d-%(processName)s#%(thread)d-%(threadName)s#%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s"
     DEFAULT:
-        format: "%(asctime)s@%(threadName)s-%(filename)s # %(name)s-%(levelname)s-%(message)s"
+        format: "%(asctime)s @ %(threadName)s-%(filename)s # %(name)s-%(levelname)s-%(message)s"
     LESS:
         format: "%(asctime)s @ %(module)s - %(name)s - %(levelname)s - %(message)s"
     MORE:
