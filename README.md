@@ -44,6 +44,7 @@
 >> is_from_outside | 是否为境外输入
 >
 > 公众人物感染情况 [**Popular.csv**](data/Popular.csv)
+>> 字段 | 含义
 >> :---:|:---:
 >> title     | 标题
 >> event     | 事件详情
