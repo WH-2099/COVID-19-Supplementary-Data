@@ -42,6 +42,13 @@
 >> detail_info     | 详细活动轨迹信息
 >> source          | 信息来源
 >> is_from_outside | 是否为境外输入
+>
+> 公众人物感染情况 [**Popular.csv**](data/Popular.csv)
+>> title     | 标题
+>> event     | 事件详情
+>> eventTime | 事件时间
+>
+
 
 ## 声明
 ###### 以下声明均直接引自数据源

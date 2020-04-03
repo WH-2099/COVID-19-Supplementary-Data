@@ -42,7 +42,12 @@
 >> detail_info     | 详细活动轨迹信息
 >> source          | 信息来源
 >> is_from_outside | 是否为境外输入
-
+>
+> 公众人物感染情况 [**Popular.csv**](https://github.com/WH-2099/COVID-19-outbreak_area_data/tree/master/data/Popular.csv)
+>> title     | 标题
+>> event     | 事件详情
+>> eventTime | 事件时间
+>
 ## 声明
 ###### 以下声明均直接引自数据源
 > - 为确保数据准确性和权威性，疫情场所数仅采用各地卫健委、政府等官方来源。

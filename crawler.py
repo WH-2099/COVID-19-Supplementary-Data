@@ -9,6 +9,7 @@ import logging.config
 import json
 import os
 import random
+import re
 
 import requests
 import requests_html
@@ -17,9 +18,10 @@ import yaml
 
 
 class Crawler:
-    '''
-    Crawler(self, logger=None, session=None)
-    基本爬虫类
+    '''基本爬虫类
+    Args:
+        logger: 日志记录器
+        session: request.Session
     '''
     def __init__(self, logger=None, session=None):
         if not logger:
@@ -60,8 +62,7 @@ class Crawler:
 
 
     def getJson(self, url, **kwargs):
-        '''
-        获取json文件并解析
+        '''获取json文件并解析
         **kwargs传入get()
         '''
         rawStr = ''
@@ -82,7 +83,7 @@ class Crawler:
             self.rawData = json.loads(jsonStr)
         except:
             self.logger.error('json解析失败')
-            raise RuntimeError('json解析失败')
+            raise
         else:
             self.logger.info('json解析成功')
 
@@ -110,15 +111,14 @@ class Crawler:
                     writer.writeheader()
                     writer.writerows(datas)
             except:
-                self.logger.error(file + '输出开始')
-                raise RuntimeError(file + '输出开始')
+                self.logger.error(file + '输出失败')
+                raise
             else:
-                self.logger.info(file + '输出开始')
+                self.logger.info(file + '输出成功')
 
 
 class AmapCrawler(Crawler):
-    '''
-    高德爬虫
+    '''高德爬虫
     '''
 
     url = 'http://wb.amap.com/channel.php?aoscommon=1&callback=_aosJsonpRequest1&urlname=https%3A%2F%2Fm5.amap.com%2Fws%2Fshield%2Fsearch%2Fyiqing&param=%5B%7B%22user_loc%22%3A%22%22%2C%22sign%22%3A1%7D%2C%7B%22fromchannel%22%3A%22gaode%22%2C%22version%22%3A4%2C%22first_request%22%3A1%2C%22sign%22%3A0%7D%5D&method=get'
@@ -142,16 +142,16 @@ class AmapCrawler(Crawler):
         cityInfoList = []
         cityInfo = {}
         for province in rawList:
-            cityInfo['provinceName'] = province.get('name', None)
-            cityInfo['provinceId'] = province.get('id', None)
-            cityInfo['provinceTotal'] = province.get('total', None)
+            cityInfo['provinceName'] = province.get('name')
+            cityInfo['provinceId'] = province.get('id')
+            cityInfo['provinceTotal'] = province.get('total')
             for city in province['list']:
-                cityInfo['cityName'] = city.get('name', None)
-                cityInfo['cityId'] = city.get('id', None)
-                cityInfo['cityLon'] = city.get('lon', None)
-                cityInfo['cityLat'] = city.get('lat', None)
-                cityInfo['cityLevel'] = city.get('level', None)
-                cityInfo['cityCount'] = city.get('count', None)
+                cityInfo['cityName'] = city.get('name')
+                cityInfo['cityId'] = city.get('id')
+                cityInfo['cityLon'] = city.get('lon')
+                cityInfo['cityLat'] = city.get('lat')
+                cityInfo['cityLevel'] = city.get('level')
+                cityInfo['cityCount'] = city.get('count')
                 #内容无意义
                 #cityInfo['textTitle'] = city.get('text_info',
                 #None).get('title',None)
@@ -176,21 +176,20 @@ class AmapCrawler(Crawler):
         poisInfoList = []
         poisInfo = {}
         for poi in rawList:
-            poisInfo['poiname'] = poi.get('poiname', None)
-            poisInfo['lat'] = poi.get('lat', None)
-            poisInfo['lon'] = poi.get('lon', None)
+            poisInfo['poiname'] = poi.get('poiname')
+            poisInfo['lat'] = poi.get('lat')
+            poisInfo['lon'] = poi.get('lon')
             #内容无意义
-            #poisInfo['number'] = poi.get('number', None)
-            poisInfo['tag'] = poi.get('tag_display_std', None)
-            poisInfo['source'] = poi.get('source', None)
+            #poisInfo['number'] = poi.get('number')
+            poisInfo['tag'] = poi.get('tag_display_std')
+            poisInfo['source'] = poi.get('source')
             poisInfoList.append(poisInfo.copy())
         return poisInfoList
 
 
 
 class UcCrawler(Crawler):
-    '''
-    UC爬虫
+    '''UC爬虫
     '''
 
     url = 'https://iflow-api.uc.cn/feiyan/track?page=0&size=100000&fallback=1&loc=%E5%85%A8%E9%83%A8%2C%E5%85%A8%E9%83%A8'
@@ -207,22 +206,58 @@ class UcCrawler(Crawler):
 
 
     def __collectTrackeInfo(self, datas):
-        trackes=datas['trackes']
-        TrackeInfoList=[]
-        TrackeInfo={}
+        trackes = datas['trackes']
+        TrackeInfoList = []
+        TrackeInfo = {}
         for Tracke in trackes:
-            TrackeInfo['id']=Tracke.get('id', None)
-            TrackeInfo['province']=Tracke.get('province', None)
-            TrackeInfo['city']=Tracke.get('city', None)
-            TrackeInfo['base_info']=Tracke.get('base_info', None)
-            TrackeInfo['detail_info']=Tracke.get('detail_info', None)
+            TrackeInfo['id'] = Tracke.get('id')
+            TrackeInfo['province'] = Tracke.get('province')
+            TrackeInfo['city'] = Tracke.get('city')
+            TrackeInfo['base_info'] = Tracke.get('base_info')
+            TrackeInfo['detail_info'] = Tracke.get('detail_info')
             #内容无意义
-            #TrackeInfo['index']=Tracke.get('index', None)
-            TrackeInfo['source']=Tracke.get('source', None)
-            TrackeInfo['is_from_outside']=Tracke.get('is_from_outside', None)
+            #TrackeInfo['index']=Tracke.get('index')
+            TrackeInfo['source'] = Tracke.get('source')
+            TrackeInfo['is_from_outside'] = Tracke.get('is_from_outside')
             TrackeInfoList.append(TrackeInfo.copy())
         return TrackeInfoList
 
+class HupuCrawler(Crawler):
+    '''虎扑爬虫
+    '''
+    
+    url = 'http://movie.hupu.com/movieapi/movieView/movieAggView?movieId=200021823'
+
+
+    def getJson(self, **kwargs):
+        return super().getJson(self.url, **kwargs)
+
+    
+    def parseRawData(self):
+        datas = self.rawData['data']
+        eventViewInfoList = self.__collectEventViewInfo(datas)
+        self.datasDict['Popular'] = eventViewInfoList
+
+
+    def __collectEventViewInfo(self, datas):
+        eventViews = datas['eventViews']
+        eventViewInfo = {}
+        eventViewInfoList = []
+        htmlPattern = re.compile(r'<.+?>')
+        for eventView in eventViews:
+            eventViewInfo['title']=eventView.get('title')
+
+            #除去html标记
+            eventViewInfo['event']=htmlPattern.sub('', eventView.get('event'))
+
+            #数据无意义
+            #eventViewInfo['eventUrl']=eventView.get('eventUrl')
+            #eventViewInfo['postId']=eventView.get('postId')
+            
+            #格式化字符为ISO-8601标准
+            eventViewInfo['eventTime']=eventView.get('eventTime').replace('年', '-').replace('月', '-').replace('日', '')
+            eventViewInfoList.append(eventViewInfo.copy())
+        return eventViewInfoList
 
 
 if __name__ == '__main__':
@@ -247,4 +282,9 @@ if __name__ == '__main__':
     uc.getJson(timeout=10)
     uc.parseRawData()
     uc.saveCsv('data/', encoding='gb18030')
+
+    hupu = HupuCrawler(logger, session)
+    hupu.getJson(timeout=10)
+    hupu.parseRawData()
+    hupu.saveCsv('data/', encoding='gb18030')
 
