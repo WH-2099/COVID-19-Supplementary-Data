@@ -9,7 +9,7 @@
 
 ### 字段说明
 
-> 行政区划下的疫情区域数量 [**City.csv**](../data/City.csv)
+> 行政区划下的疫情区域数量 [**City.csv**](https://github.com/WH-2099/COVID-19-outbreak_area_data/tree/master/data/City.csv)
 >> 字段 | 含义
 >> :---:|:---:
 >> provinceName  | 省份名
@@ -22,7 +22,7 @@
 >> cityLevel  | 定位精度
 >> cityCount  | 城市疫情区域数量
 >
-> 具体疫情区域信息 [**Pois.csv**](../data/Pois.csv)
+> 具体疫情区域信息 [**Pois.csv**](https://github.com/WH-2099/COVID-19-outbreak_area_data/tree/master/data/Pois.csv)
 >
 >> 字段 | 含义
 >> :---:|:---:
@@ -32,7 +32,7 @@
 >> tag     | 地点类型
 >> source  | 信息来源
 >
-> 患者活动轨迹（文本描述） [**Tracke.csv**](../data/Tracke.csv)
+> 患者活动轨迹（文本描述） [**Tracke.csv**](https://github.com/WH-2099/COVID-19-outbreak_area_data/tree/master/data/Tracke.csv)
 >> 字段 | 含义
 >> :---:|:---:
 >> id              | 编号

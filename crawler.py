@@ -59,14 +59,14 @@ class Crawler:
                     yield (pre + ['(,)'], item)
 
 
-    def getJson(self, url, **kargs):
+    def getJson(self, url, **kwargs):
         '''
         获取json文件并解析
-        **kargs传入get()
+        **kwargs传入get()
         '''
         rawStr = ''
         self.logger.info('json爬取开始')
-        with self.session.get(url, **kargs) as response:
+        with self.session.get(url, **kwargs) as response:
             if response.status_code == requests.codes.ok:
                 self.logger.info('json爬取成功')
                 rawStr = response.text
@@ -94,16 +94,16 @@ class Crawler:
         pass
 
 
-    def saveCsv(self, dir, **kargs):
+    def saveCsv(self, dir, **kwargs):
         '''
         保存csv文件
-        **kargs传入open()
+        **kwargs传入open()
         '''
         for tableName, datas in self.datasDict.items():
             file = os.path.join(dir, str(tableName) + '.csv')
             self.logger.info(file + '输出开始')
             try:
-                with open(file, 'w', newline='', **kargs) as csvF:
+                with open(file, 'w', newline='', **kwargs) as csvF:
                 #csv模块官方要求打开时设置参数 newline=''
                     heads = datas[0].keys()
                     writer = csv.DictWriter(csvF, heads)
@@ -124,8 +124,8 @@ class AmapCrawler(Crawler):
     url = 'http://wb.amap.com/channel.php?aoscommon=1&callback=_aosJsonpRequest1&urlname=https%3A%2F%2Fm5.amap.com%2Fws%2Fshield%2Fsearch%2Fyiqing&param=%5B%7B%22user_loc%22%3A%22%22%2C%22sign%22%3A1%7D%2C%7B%22fromchannel%22%3A%22gaode%22%2C%22version%22%3A4%2C%22first_request%22%3A1%2C%22sign%22%3A0%7D%5D&method=get'
 
 
-    def getJson(self, **kargs):
-        super().getJson(self.url, **kargs)
+    def getJson(self, **kwargs):
+        super().getJson(self.url, **kwargs)
 
 
     def parseRawData(self):
@@ -196,8 +196,8 @@ class UcCrawler(Crawler):
     url = 'https://iflow-api.uc.cn/feiyan/track?page=0&size=100000&fallback=1&loc=%E5%85%A8%E9%83%A8%2C%E5%85%A8%E9%83%A8'
 
 
-    def getJson(self, **kargs):
-        super().getJson(self.url, **kargs)
+    def getJson(self, **kwargs):
+        super().getJson(self.url, **kwargs)
 
 
     def parseRawData(self):
