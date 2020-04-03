@@ -44,6 +44,7 @@
 >> is_from_outside | 是否为境外输入
 >
 > 公众人物感染情况 [**Popular.csv**](https://github.com/WH-2099/COVID-19-outbreak_area_data/tree/master/data/Popular.csv)
+>> :---:|:---:
 >> title     | 标题
 >> event     | 事件详情
 >> eventTime | 事件时间
