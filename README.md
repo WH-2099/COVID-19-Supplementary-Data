@@ -1,5 +1,7 @@
 # COVID-19-outbreak_area_data
 
+[![LICENSE](https://img.shields.io/github/license/WH-2099/COVID-19-outbreak_area_data?style=for-the-badge)](LICENSE)
+
 ### COVID-19疫情区域及患者活动轨迹数据
 
 ### 数据源: ![AliUC](docs/AliUC.png) ![XinhuaAmap](docs/XinhuaAmap.png)
@@ -58,8 +60,5 @@
 > - 官方目前未公布所有疫情场所，部分城市暂未收录。
 > - 官方目前仅公布了部分确诊患者的活动场所，因此疫情场所数不等同于各地新冠肺炎确诊人数。
 > - 确诊者信息持续收集中，仅收录官方公布的信息。
-
-## 开源许可
-本项目采用MIT许可证开源，具体信息参见[**LICENSE**](LICENSE)
 
 
