@@ -18,28 +18,28 @@
 > 行政区划下的疫情区域数量 [**City.csv**][City.csv]
 >> 字段 | 含义
 >> :---:|:---:
->> provinceName  | 省份名
->> provinceId    | 省份编号
->> provinceTotal | 省份总计疫情区域数量
->> cityName   | 城市名
->> cityId     | 城市编号
->> cityLon    | 城市经度
->> cityLat    | 城市纬度
->> cityLevel  | 定位精度
->> cityCount  | 城市疫情区域数量
+>> province_name  | 省份名
+>> province_id    | 省份编号
+>> province_total | 省份总计疫情区域数量
+>> city_name   | 城市名
+>> city_id     | 城市编号
+>> city_lon    | 城市经度
+>> city_lat    | 城市纬度
+>> city_level  | 定位精度
+>> city_count  | 城市疫情区域数量
 >
 > 具体疫情区域信息 [**Pois.csv**][Pois.csv]
 >
 >> 字段 | 含义
 >> :---:|:---:
->> poiname | 疫情地点名
+>> poi_name | 疫情地点名
 >> lon     | 经度
 >> lat     | 纬度
 >> tag     | 地点类型
 >> source  | 信息来源
 
 
-## 患者轨迹 [![AliUC](AliUC.png)][uc]
+## 患者轨迹 [![AliUC](docs/AliUC.png)][uc]
 
 > 患者活动轨迹 [**Tracke.csv**][Tracke.csv]
 >> 字段 | 含义
@@ -53,14 +53,14 @@
 >> is_from_outside | 是否为境外输入
 
 
-## 名人感染 [![Hupu](Hupu.png)][hupu]
+## 名人感染 [![Hupu](docs/Hupu.png)][hupu]
 
 > 公众人物感染情况 [**Popular.csv**][Popular.csv]
 >> 字段 | 含义
 >> :---:|:---:
 >> title     | 标题
 >> event     | 事件详情
->> eventTime | 事件时间
+>> date | 事件时间
 
 
 [LICENSE]: https://github.com/WH-2099/COVID-19-outbreak_area_data/tree/master/LICENSE

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'WH-2099'
 
-import csv
 import datetime
 import logging
 import logging.config
@@ -11,8 +10,10 @@ import os
 import random
 import re
 
+import psycopg2
+import psycopg2.extras
 import requests
-import requests_html
+import tablib
 import yaml
 
 
@@ -37,7 +38,7 @@ class Crawler:
 
 
     @staticmethod
-    def showJson(data, pre=[]):
+    def showJsonObject(data, pre=[]):
         if isinstance(data, dict):
             for k, v in data.items():
                 if isinstance(v, (dict, list, tuple)):
@@ -61,6 +62,10 @@ class Crawler:
                     yield (pre + ['(,)'], item)
 
 
+    def saveDB(self, conn):
+        pass
+
+                
     def getJson(self, url, **kwargs):
         '''获取json文件并解析
         **kwargs传入get()
@@ -95,21 +100,21 @@ class Crawler:
         pass
 
 
-    def saveCsv(self, dir, **kwargs):
+    def saveFile(self, dir, format='csv', **kwargs):
         '''
-        保存csv文件
+        保存文件
         **kwargs传入open()
         '''
         for tableName, datas in self.datasDict.items():
             file = os.path.join(dir, str(tableName) + '.csv')
             self.logger.info(file + '输出开始')
             try:
-                with open(file, 'w', newline='', **kwargs) as csvF:
-                #csv模块官方要求打开时设置参数 newline=''
-                    heads = datas[0].keys()
-                    writer = csv.DictWriter(csvF, heads)
-                    writer.writeheader()
-                    writer.writerows(datas)
+                with open(file, 'wt', newline='', **kwargs) as f:
+                #newline=''输出时不对\n进行转换
+                    ds = tablib.Dataset()
+                    ds.dict = datas
+                    del ds['update_date']
+                    f.write(ds.export(format))
             except:
                 self.logger.error(file + '输出失败')
                 raise
@@ -130,7 +135,6 @@ class AmapCrawler(Crawler):
 
     def parseRawData(self):
         datas = self.rawData['data']
-        date = self.__collectDate(datas)
         cityInfoList = self.__collectCityInfo(datas)
         poisInfoList = self.__collectPoisInfo(datas)
         self.datasDict['City'] = cityInfoList
@@ -142,33 +146,24 @@ class AmapCrawler(Crawler):
         cityInfoList = []
         cityInfo = {}
         for province in rawList:
-            cityInfo['provinceName'] = province.get('name')
-            cityInfo['provinceId'] = province.get('id')
-            cityInfo['provinceTotal'] = province.get('total')
+            cityInfo['province_name'] = province.get('name')
+            cityInfo['province_id'] = province.get('id')
+            cityInfo['province_total'] = province.get('total')
             for city in province['list']:
-                cityInfo['cityName'] = city.get('name')
-                cityInfo['cityId'] = city.get('id')
-                cityInfo['cityLon'] = city.get('lon')
-                cityInfo['cityLat'] = city.get('lat')
-                cityInfo['cityLevel'] = city.get('level')
-                cityInfo['cityCount'] = city.get('count')
+                cityInfo['city_name'] = city.get('name')
+                cityInfo['city_id'] = city.get('id')
+                cityInfo['city_lon'] = city.get('lon')
+                cityInfo['city_lat'] = city.get('lat')
+                cityInfo['city_level'] = city.get('level')
+                cityInfo['city_count'] = city.get('count')
                 #内容无意义
                 #cityInfo['textTitle'] = city.get('text_info',
                 #None).get('title',None)
                 #cityInfo['textContent'] =
                 #city.get('text_info',None).get('content', None)
+                cityInfo['update_date'] = datetime.date.today()
                 cityInfoList.append(cityInfo.copy())
         return cityInfoList
-
-
-    def __collectDate(self, datas):
-        rawDate = datas['date']
-        splitIndex = rawDate.find('月')
-        year = 2020
-        month = int(rawDate[0:splitIndex])
-        day = int(rawDate[splitIndex + 1:-1])
-        date = datetime.date(year, month, day)
-        return date
 
 
     def __collectPoisInfo(self, datas):
@@ -176,16 +171,33 @@ class AmapCrawler(Crawler):
         poisInfoList = []
         poisInfo = {}
         for poi in rawList:
-            poisInfo['poiname'] = poi.get('poiname')
+            poisInfo['poi_name'] = poi.get('poiname')
             poisInfo['lat'] = poi.get('lat')
             poisInfo['lon'] = poi.get('lon')
             #内容无意义
             #poisInfo['number'] = poi.get('number')
             poisInfo['tag'] = poi.get('tag_display_std')
             poisInfo['source'] = poi.get('source')
+            poisInfo['update_date'] = datetime.date.today()
             poisInfoList.append(poisInfo.copy())
         return poisInfoList
 
+    
+    def saveDB(self, conn):
+        with conn:
+            self.logger.info('更新city数据库')
+            cc = conn.cursor()
+            psycopg2.extras.execute_batch(cc, """INSERT INTO city(province_name, province_id, province_total, city_name, city_id, city_lon, city_lat, city_level, city_count, update_date)
+                                                 VALUES (%(province_name)s, %(province_id)s, %(province_total)s, %(city_name)s, %(city_id)s, %(city_lon)s, %(city_lat)s, %(city_level)s, %(city_count)s, %(update_date)s)
+                                                 ON CONFLICT DO NOTHING;"""
+                                                 , self.datasDict['City'])
+        with conn:
+            self.logger.info('更新pois数据库')
+            cc = conn.cursor()
+            psycopg2.extras.execute_batch(cc, """INSERT INTO pois(poi_name, lat, lon, tag, source, update_date)
+                                                 VALUES (%(poi_name)s, %(lat)s, %(lon)s, %(tag)s, %(source)s, %(update_date)s)
+                                                 ON CONFLICT (poi_name, lat, lon) DO UPDATE SET update_date=%(update_date)s;"""
+                                                 , self.datasDict['Pois'])
 
 
 class UcCrawler(Crawler):
@@ -218,9 +230,20 @@ class UcCrawler(Crawler):
             #内容无意义
             #TrackeInfo['index']=Tracke.get('index')
             TrackeInfo['source'] = Tracke.get('source')
-            TrackeInfo['is_from_outside'] = Tracke.get('is_from_outside')
+            TrackeInfo['is_from_outside'] = bool(Tracke.get('is_from_outside'))
+            TrackeInfo['update_date'] = datetime.date.today()
             TrackeInfoList.append(TrackeInfo.copy())
         return TrackeInfoList
+
+
+    def saveDB(self, conn):
+        with conn:
+            self.logger.info('更新tracke数据库')
+            cc = conn.cursor()
+            psycopg2.extras.execute_batch(cc, """INSERT INTO tracke(id, province, city, base_info, detail_info, source, is_from_outside, update_date)
+                                                 VALUES (%(id)s, %(province)s, %(city)s, %(base_info)s, %(detail_info)s, %(source)s, %(is_from_outside)s, %(update_date)s)
+                                                 ON CONFLICT (id) DO UPDATE SET update_date=%(update_date)s;"""
+                                                 , self.datasDict['Tracke'])
 
 class HupuCrawler(Crawler):
     '''虎扑爬虫
@@ -255,20 +278,36 @@ class HupuCrawler(Crawler):
             #eventViewInfo['postId']=eventView.get('postId')
             
             #格式化字符为ISO-8601标准
-            eventViewInfo['eventTime']=eventView.get('eventTime').replace('年', '-').replace('月', '-').replace('日', '')
+            eventViewInfo['date']=eventView.get('eventTime').replace('年', '-').replace('月', '-').replace('日', '')
+            eventViewInfo['update_date'] = datetime.date.today()
             eventViewInfoList.append(eventViewInfo.copy())
         return eventViewInfoList
+
+    
+    def saveDB(self, conn):
+        with conn:
+            self.logger.info('更新popular数据库')
+            cc = conn.cursor()
+            psycopg2.extras.execute_batch(cc, """INSERT INTO popular(title, event, date, update_date)
+                                                 VALUES(%(title)s, %(event)s, %(date)s, %(update_date)s)
+                                                 ON CONFLICT (title) DO UPDATE SET update_date=%(update_date)s;"""
+                                                 , self.datasDict['Popular'])
 
 
 if __name__ == '__main__':
 
-    with open('config/LogConfigNormal.yaml', 'r', encoding='utf-8') as configYaml:
+    with open('config/DatabaseConfig.yaml', 'rt', encoding='utf-8') as dbYAML:
+        dbConfig = yaml.safe_load(dbYAML)
+    conn = psycopg2.connect(**dbConfig['arch'])
+
+
+    with open('config/LogConfigNormal.yaml', 'rt', encoding='utf-8') as configYaml:
         configDict = yaml.safe_load(configYaml)
         logging.config.dictConfig(configDict)
     logger = logging.getLogger('root')
 
     session = requests.Session()
-    with open('config/UserAgents.yaml', 'r', encoding='utf-8') as uaYaml:
+    with open('config/UserAgents.yaml', 'rt', encoding='utf-8') as uaYaml:
         uaDict = yaml.safe_load(uaYaml)['UserAgent']
         ua = random.choice(list(uaDict.values()))
         session.headers['user-agent'] = ua['String']
@@ -276,15 +315,20 @@ if __name__ == '__main__':
     amap = AmapCrawler(logger, session)
     amap.getJson(timeout=10)
     amap.parseRawData()
-    amap.saveCsv('data/', encoding='gb18030')
+    amap.saveFile('data/', encoding='gb18030')
+    amap.saveDB(conn)
 
     uc = UcCrawler(logger, session)
     uc.getJson(timeout=10)
     uc.parseRawData()
-    uc.saveCsv('data/', encoding='gb18030')
+    uc.saveFile('data/', encoding='gb18030')
+    uc.saveDB(conn)
 
     hupu = HupuCrawler(logger, session)
     hupu.getJson(timeout=10)
     hupu.parseRawData()
-    hupu.saveCsv('data/', encoding='gb18030')
+    hupu.saveFile('data/', encoding='gb18030')
+    hupu.saveDB(conn)
 
+
+    

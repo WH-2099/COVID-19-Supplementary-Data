@@ -18,21 +18,21 @@
 > 行政区划下的疫情区域数量 [**City.csv**][City.csv]
 >> 字段 | 含义
 >> :---:|:---:
->> provinceName  | 省份名
->> provinceId    | 省份编号
->> provinceTotal | 省份总计疫情区域数量
->> cityName   | 城市名
->> cityId     | 城市编号
->> cityLon    | 城市经度
->> cityLat    | 城市纬度
->> cityLevel  | 定位精度
->> cityCount  | 城市疫情区域数量
+>> province_name  | 省份名
+>> province_id    | 省份编号
+>> province_total | 省份总计疫情区域数量
+>> city_name   | 城市名
+>> city_id     | 城市编号
+>> city_lon    | 城市经度
+>> city_lat    | 城市纬度
+>> city_level  | 定位精度
+>> city_count  | 城市疫情区域数量
 >
 > 具体疫情区域信息 [**Pois.csv**][Pois.csv]
 >
 >> 字段 | 含义
 >> :---:|:---:
->> poiname | 疫情地点名
+>> poi_name | 疫情地点名
 >> lon     | 经度
 >> lat     | 纬度
 >> tag     | 地点类型
@@ -60,7 +60,7 @@
 >> :---:|:---:
 >> title     | 标题
 >> event     | 事件详情
->> eventTime | 事件时间
+>> date | 事件时间
 
 
 [LICENSE]: LICENSE
