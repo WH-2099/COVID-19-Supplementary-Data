@@ -12,7 +12,7 @@ loggers:
 
 _handlers_file:
     filename: &_filename .log
-    mode: &_mode "a"
+    mode: &_mode 'a'
     encoding: &_encoding utf-8
     delay: &_delay False
     #errors: &_errors None
@@ -55,7 +55,7 @@ handlers:
         #formatter: 
         #filters: []
         class: logging.handlers.TimedRotatingFileHandler
-        when: "H" #"S"秒 "M"分 "H"时 "D"天 "midnight" "W0"-"W6"工作日(0=星期一)
+        when: 'H' #'S'秒 'M'分 'H'时 'D'天 'midnight' 'W0'-'W6'工作日(0=星期一)
         interval: 12 #when*interval
         backupCount: 2
         filename: *_filename
@@ -82,10 +82,10 @@ formatters:
     # %(thread)d
     # %(threadName)s
     ALL:
-        format: "%(asctime)s@%(process)d-%(processName)s#%(thread)d-%(threadName)s#%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s"
+        format: '%(asctime)s@%(process)d-%(processName)s#%(thread)d-%(threadName)s#%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s'
     DEFAULT:
-        format: "%(asctime)s @ %(threadName)s-%(filename)s # %(name)s-%(levelname)s-%(message)s"
+        format: '%(asctime)s @ %(threadName)s-%(filename)s # %(name)s-%(levelname)s-%(message)s'
     LESS:
-        format: "%(asctime)s @ %(module)s - %(name)s - %(levelname)s - %(message)s"
+        format: '%(asctime)s @ %(module)s - %(name)s - %(levelname)s - %(message)s'
     MORE:
-        format: "%(asctime)s@%(process)d-%(thread)d-%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s"
+        format: '%(asctime)s@%(process)d-%(thread)d-%(pathname)s#%(name)s-%(levelname)s#%(funcName)s-%(message)s'
