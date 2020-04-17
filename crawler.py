@@ -296,9 +296,10 @@ class HupuCrawler(Crawler):
 
 if __name__ == '__main__':
 
-    with open('config/DatabaseConfig.yaml', 'rt', encoding='utf-8') as dbYAML:
-        dbConfig = yaml.safe_load(dbYAML)
-    conn = psycopg2.connect(**dbConfig['arch'])
+    with open('../Tools/ConfigYaml/DatabaseConfigTemplate.yaml', 'rt', encoding='utf-8') as dbYAML:
+        dbConfig = yaml.safe_load(dbYAML)['arch']
+        dbConfig['dbname'] = 'covid'
+    conn = psycopg2.connect(**dbConfig)
 
 
     with open('config/LogConfigNormal.yaml', 'rt', encoding='utf-8') as configYaml:
